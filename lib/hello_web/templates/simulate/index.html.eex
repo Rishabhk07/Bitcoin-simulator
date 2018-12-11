@@ -1,0 +1,6 @@
+<p>
+  Blockchain:
+  <%= for {:data, :hash, :prevhash} <- @blockchain do %>
+
+  <% end %>
+</p>
