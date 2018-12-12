@@ -6,4 +6,8 @@ defmodule HelloWeb.SimulateController do
 #    render(conn, "index.html", blockchain: Blockchain.print_block_chain_test())
       json(conn,Blockchain.print_block_chain_test())
   end
+
+  def get_blockchain(conn, _params ) do
+    json(conn,Blockchain.print_block_chain_test())
+  end
 end

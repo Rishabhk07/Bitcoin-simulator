@@ -47,7 +47,6 @@ defmodule Miner do
     )
   end
   def mine_next(name) do
-#    IO.inspect name
     value = GenServer.call(
       name,
       :mine_transaction
@@ -56,11 +55,19 @@ defmodule Miner do
 #      Process.sleep(1000)
       mine_next(name)
     end
+    value
+  end
+
+  def get_public_key(name) do
+    IO.inspect "#{name}"
+    GenServer.call(name,:get_key)
   end
   ############################################################################## SERVER SIDE ######################################
   def init(args) do
 #    IO.inspect "started node #{args}"
-    {:ok, args }
+    {private_key, public_key} = :crypto.generate_key(:ecdh, :secp256k1)
+
+    {:ok, %{:name=>args, :public=>public_key |> Base.encode16, :private=>private_key |> Base.encode16} }
   end
   def handle_call(:mine_transaction, from_, state) do
 #    IO.inspect state
@@ -69,17 +76,22 @@ defmodule Miner do
     if(length(transactions) != 0) do
       next_transaction = hd(transactions)
       %Block{hash: prev} = hd(blockchain)
-      IO.puts "New block started mining  on #{state}"
+      IO.puts "New block started mining  on #{state.name}"
       block =
         next_transaction
         |> Block.new(prev)
         |> Crypto.put_hash
       #    IO.inspect block
-      Blockchain.add_block(block)
-      {:reply, 1, state}
+      Blockchain.add_block(block,state.public)
+      {:reply, state, state}
       else
-      IO.puts "All transaction are done for now #{state}"
+      IO.puts "All transaction are done for now #{state.name}"
       {:reply, 0, state}
     end
+  end
+
+  def handle_call(:get_key, from_,state) do
+    IO.inspect "got into miner"
+    {:reply,state,state}
   end
 end

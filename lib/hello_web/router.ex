@@ -22,6 +22,11 @@ defmodule HelloWeb.Router do
     resources "/post", PostController, only: [:index, :show]
     get "/charts", ChartsController, :index
     get "/simulate", SimulateController, :index
+    get "/get_blockchain", SimulateController, :get_blockchain
+    get "/mine_block", MineController, :index
+    get "/get_miner_keys", MineController, :get_keys
+    get "/get_wallet_keys", MineController, :get_wallet_keys
+    get "/wallet_from_miners", MineController, :get_coin_from_miner
   end
 
   scope "/admin", HelloWeb.Admin, as: :admin do

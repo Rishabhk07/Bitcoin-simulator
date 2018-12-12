@@ -9,6 +9,9 @@ defmodule Wallet do
   def new_transaction(name)  do
     GenServer.call(name, :new_transaction)
   end
+  def new_transaction_from_miner(name, miner_public,amount)  do
+    GenServer.call(name, {:new_transaction_miner,miner_public,amount})
+  end
   def new_test_transaction(name,to_address)  do
     GenServer.call(name, {:new_test_transaction,to_address})
   end
@@ -32,8 +35,17 @@ defmodule Wallet do
   def handle_call(:new_transaction,  from_, state) do
     IO.puts "New Transaction from #{state.name}"
     to_address = get_public_key("Wallet#{get_random(String.slice(to_string(state.name),-1..-1))}" |> String.to_atom())
-    amount = Enum.random(1..1000)
+    amount = 0
     transaction = Transaction.new(to_string(state.public_key), to_string(to_address), amount)
+    Transaction.add_transaction(transaction)
+    {:reply,transaction,state}
+  end
+  def handle_call({:new_transaction_miner,miner_public,amount},  from_, state) do
+    IO.puts "New Transaction from #{state.name}"
+    from_address = miner_public
+    to_address = to_string(state.public_key)
+    amount = amount
+    transaction = Transaction.new(from_address, to_string(to_address), amount)
     Transaction.add_transaction(transaction)
     {:reply,transaction,state}
   end
