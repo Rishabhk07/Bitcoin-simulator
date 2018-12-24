@@ -60,7 +60,7 @@ defmodule Bitcoin do
   end
   def wallet_transactions(num) do
   end
-  def invoke_wallets(num) when num <= 5 do
+  def invoke_wallets(num) when num <= 100 do
     GenServer.call("Parent" |> String.to_atom(),{:invoke_wallet,wallet_node_name(num)})
     invoke_wallets(1+num)
   end
@@ -68,7 +68,7 @@ defmodule Bitcoin do
     IO.puts "5 wallets invoked, each will make 1 transaction"
   end
 
-  def invoke_miner(num) when num <= 5 do
+  def invoke_miner(num) when num <= 100 do
     GenServer.call("Parent" |> String.to_atom(),{:invoke_miner,node_name(num)})
     invoke_miner(1+num)
   end

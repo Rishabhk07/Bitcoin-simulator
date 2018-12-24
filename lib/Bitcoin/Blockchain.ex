@@ -43,8 +43,8 @@ defmodule Blockchain do
   def get_blockchain do
     GenServer.call("Blockchain" |> String.to_atom(),:get_blockchain)
   end
-  def add_block(block,miner_public) do
-    GenServer.cast("Blockchain" |> String.to_atom(), {:update_blockchain,block,miner_public})
+  def add_block(block,miner_public,prev) do
+    GenServer.call("Blockchain" |> String.to_atom(), {:update_blockchain,block,miner_public,prev})
   end
   def print_block_chain do
     GenServer.cast("Blockchain" |> String.to_atom(), :print_blockchain)
@@ -57,15 +57,20 @@ defmodule Blockchain do
     zeroHash = Crypto.put_hash(Block.zero)
     {:ok, %{:blockchain=>[zeroHash], :hash_chain => [zeroHash.hash]}}
   end
-  def handle_cast({:update_blockchain, block,miner_public}, blockchain_hash) do
+  def handle_call({:update_blockchain, block,miner_public,prev}, from_, blockchain_hash) do
 #    blockchain = blockchain_hash.blockchain
 #    IO.inspect block
 #    IO.inspect block.data
 
     {:ok,hash_chain}= Map.fetch(blockchain_hash, :hash_chain)
+    blkchain = blockchain_hash.blockchain
 #    IO.inspect hash_chain
 #    IO.inspect blockchain_hash.blockchain
-    blockchain_hash = if(!(Crypto.get_hash(block.data)  in hash_chain)) do
+
+    IO.inspect (prev == hd(blkchain) || prev == "ZERO_HASH")
+    IO.inspect prev
+    IO.inspect (hd(blkchain)).hash
+    blockchain_hash = if(!(Crypto.get_hash(block.data)  in hash_chain) && prev == (hd(blkchain)).hash) do
       blockchain_hash = Map.put(blockchain_hash,:blockchain,[block | blockchain_hash.blockchain])
 #      IO.inspect blockchain_hash.blockchain
       blockchain_hash = Map.put(blockchain_hash, :hash_chain,[Crypto.get_hash(block.data) | hash_chain])
@@ -86,7 +91,7 @@ defmodule Blockchain do
 
 
 #    IO.inspect blockchain_hash.blockchain
-    {:noreply, blockchain_hash}
+    {:reply, blockchain_hash, blockchain_hash}
   end
   def handle_call(:get_blockchain, from_, blockchain_hash) do
     {:reply,blockchain_hash.blockchain,blockchain_hash}

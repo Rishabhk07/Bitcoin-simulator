@@ -82,7 +82,7 @@ defmodule Miner do
         |> Block.new(prev)
         |> Crypto.put_hash
       #    IO.inspect block
-      Blockchain.add_block(block,state.public)
+      Blockchain.add_block(block,state.public,prev)
       {:reply, state, state}
       else
       IO.puts "All transaction are done for now #{state.name}"

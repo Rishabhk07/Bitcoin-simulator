@@ -131,7 +131,7 @@ $(function (){
 
       })
     }
-    
+
     function update_miner_data(new_data) {
         miner_chart.data.datasets[0].data = new_data;
         miner_chart.update();
@@ -143,6 +143,7 @@ $(function (){
     }
 
     function init_wallet_chart(){
+        
         var ctx = document.getElementById("wallet_chart").getContext('2d');
         wallet_chart = new Chart(ctx, {
             type: 'bar',

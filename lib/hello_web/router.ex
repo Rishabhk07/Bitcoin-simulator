@@ -27,6 +27,8 @@ defmodule HelloWeb.Router do
     get "/get_miner_keys", MineController, :get_keys
     get "/get_wallet_keys", MineController, :get_wallet_keys
     get "/wallet_from_miners", MineController, :get_coin_from_miner
+    get "/simulator100", SimulatorController, :index
+    get "/blockchain_valid", MineController, :blockchain
   end
 
   scope "/admin", HelloWeb.Admin, as: :admin do

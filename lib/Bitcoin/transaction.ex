@@ -29,7 +29,7 @@ defmodule Transaction do
   end
   def add_transaction(transaction) do
     GenServer.call("Transactions" |> String.to_atom(), {:new_transaction,transaction})
-    Miner.mine_next("Miner#{Enum.random(1..5)}" |> String.to_atom)
+    Miner.mine_next("Miner#{Enum.random(1..100)}" |> String.to_atom)
   end
   def add_transaction_cast(transaction) do
     GenServer.cast("Transactions" |> String.to_atom(), {:new_transaction,transaction})
